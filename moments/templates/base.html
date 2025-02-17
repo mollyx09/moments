@@ -34,7 +34,13 @@
           {{ render_nav_item('main.index', 'Home') }}
           {{ render_nav_item('main.explore', 'Explore') }}
           <form class="d-flex" role="search" action="{{ url_for('main.search') }}">
-            <input class="form-control me-2" name="q" type="search" placeholder="Photo, tag or user" aria-label="Search" required>
+            <input class="form-control me-2" name="q" type="search" placeholder="Search for Photos, tags or users" 
+            aria-label="Search" required value="{{ request.args.get('q', '') }}">
+            <select class="form-select me-2" name="category" aria-label="Search Category">
+              <option value="photo" {% if request.args.get('category', 'photo') == 'photo' %}selected{% endif %}>Photos</option>
+              <option value="tag" {% if request.args.get('category') == 'tag' %}selected{% endif %}>Tags</option>
+              <option value="user" {% if request.args.get('category') == 'user' %}selected{% endif %}>Users</option>
+            </select>
             <button class="btn btn-light my-2 my-sm-0" type="submit">
               {{ render_icon('search') }}
             </button>
