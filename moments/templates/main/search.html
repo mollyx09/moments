@@ -10,7 +10,7 @@
 </div>
 
 <div class="row">
-  <!-- Sidebar for category selection -->
+
   <div class="col-md-3">
     <div class="nav nav-pills flex-column" role="tablist" aria-orientation="vertical">
       <a class="nav-item nav-link {% if category == 'photo' %}active{% endif %}"
@@ -22,7 +22,7 @@
     </div>
   </div>
 
-  <!-- Main content area for search results -->
+
   <div class="col-md-9">
     {% if results %}
       <h5 class="mb-3">{{ results|length }} results found</h5>

@@ -84,8 +84,8 @@ def flash_errors(form):
 
 def imageAltTextGeneration(image):
 
-    credentials=AzureKeyCredential(os.getenv("AZURE_VISION_ENDPOINT"))
-    endpoint=os.getenv("AZURE_VISION_KEY")
+    endpoint=os.getenv("AZURE_VISION_ENDPOINT")
+    credentials=AzureKeyCredential(os.getenv("AZURE_VISION_KEY"))
     client = ImageAnalysisClient(
         endpoint=endpoint,
         credential=credentials
@@ -99,8 +99,8 @@ def imageAltTextGeneration(image):
 
 
 def analyzeImage(imageBinary : bytes):
-    credentials=AzureKeyCredential(os.getenv("AZURE_VISION_ENDPOINT"))
-    endpoint=os.getenv("AZURE_VISION_KEY")
+    endpoint=os.getenv("AZURE_VISION_ENDPOINT")
+    credentials=AzureKeyCredential(os.getenv("AZURE_VISION_KEY"))
 
     client = ImageAnalysisClient(
         endpoint=endpoint,
