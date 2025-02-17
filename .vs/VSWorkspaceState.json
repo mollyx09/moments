@@ -1,0 +1,11 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\.github",
+    "\\logs",
+    "\\moments",
+    "\\moments\\blueprints"
+  ],
+  "SelectedNode": "\\moments\\blueprints\\main.py",
+  "PreviewInSolutionExplorer": false
+}
