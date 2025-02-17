@@ -59,31 +59,11 @@ def search():
     per_page = current_app.config['MOMENTS_SEARCH_RESULT_PER_PAGE']
     # TODO: add SQLAlchemy 2.x support to Flask-Whooshee then update the following code
     if category == 'user':
-        users_with_tag = (
-            db.session.query(User)
-            .join(Photo)
-            .join(photo_tag)
-            .join(Tag)
-            .filter(Tag.name.ilike(f"%{q}%"))
-            .distinct()
-        )
-        
-        users_search_query = User.query.whooshee_search(q).union(users_with_tag)
-        pagination = users_search_query.paginate(page=page, per_page=per_page)
-        #pagination = User.query.whooshee_search(q).paginate(page=page, per_page=per_page)
+        pagination = User.query.whooshee_search(q).paginate(page=page, per_page=per_page)
     elif category == 'tag':
         pagination = Tag.query.whooshee_search(q).paginate(page=page, per_page=per_page)
     else:
-        photos_with_tag = (
-            Photo.query.join(photo_tag)
-            .join(Tag)
-            .filter(Tag.name.ilike(f"%{q}%"))
-            .distinct()
-        )
-        photos_search_query = Photo.query.whooshee_search(q).union(photos_with_tag)
-        pagination = photos_search_query.paginate(page=page, per_page=per_page)
-
-        #pagination = Photo.query.whooshee_search(q).paginate(page=page, per_page=per_page)
+        pagination = Photo.query.whooshee_search(q).paginate(page=page, per_page=per_page)
     results = pagination.items
     return render_template('main/search.html', q=q, results=results, pagination=pagination, category=category)
 
@@ -150,25 +130,26 @@ def upload():
         if not validate_image(f.filename):
             return 'Invalid image.', 400
         filename = rename_image(f.filename)
+        image_path = current_app.config['MOMENTS_UPLOAD_PATH']/filename
+        f.save(str(image_path))
+        filename_s = resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['small'])
+        filename_m = resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['medium'])
         f.seek(0)
         binaryImage = f.read()
         description = imageAltTextGeneration(binaryImage)
-        f.save(current_app.config['MOMENTS_UPLOAD_PATH'] / filename)
-        filename_s = resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['small'])
-        filename_m = resize_image(f, filename, current_app.config['MOMENTS_PHOTO_SIZES']['medium'])
-        binaryImage = f.read()  
+
         photo = Photo(
             filename=filename, 
             filename_s=filename_s, 
             filename_m=filename_m, 
             author=current_user._get_current_object(), 
-            description=description,
+            description=description
         )
         db.session.add(photo)
         db.session.commit()
         f.seek(0)
-        binaryyImage = f.read()
-        tags = analyzeImage(binaryyImage)
+        binaryImage = f.read()
+        tags = analyzeImage(binaryImage)
         tag_objects = []
         for tag_name in tags:
             tag = db.session.scalar(select(Tag).filter_by(name=tag_name))
@@ -176,8 +157,7 @@ def upload():
                 tag = Tag(name=tag_name)
                 db.session.add(tag)
                 db.session.commit()
-            if tag not in tag_objects:
-                tag_objects.append(tag)
+            tag_objects.append(tag)
         photo.tags.extend(tag_objects)  
         db.session.commit()
 
